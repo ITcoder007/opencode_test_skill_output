@@ -1,5 +1,4 @@
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
@@ -104,7 +103,7 @@ public class Convert {
 
     public static void main(String[] args) {
         if (args.length < 1) {
-            System.err.println("Usage: convert.py <python_file> [output_dir]");
+            System.err.println("Usage: Convert <python_file> [output_dir]");
             System.exit(1);
         }
 
@@ -123,7 +122,6 @@ public class Convert {
             pythonCode = readPythonFile(pythonFile);
         } catch (IOException e) {
             System.err.println("Failed to read Python file: " + e.getMessage());
-            System.exit(1);
             return;
         }
         System.out.println("Read Python code from " + pythonFile);
