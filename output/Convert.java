@@ -31,17 +31,18 @@ public class Convert {
 
         ProcessBuilder pb = new ProcessBuilder("codex", "exec", "--sandbox", "read-only", prompt);
         pb.directory(outputFile.getParent().toFile());
-        pb.redirectErrorStream(true);
+        pb.redirectErrorStream(false);
         Process process = pb.start();
 
-        String output = new String(process.getInputStream().readAllBytes());
+        String stdout = new String(process.getInputStream().readAllBytes());
+        String stderr = new String(process.getErrorStream().readAllBytes());
         int exitCode = process.waitFor();
 
         if (exitCode != 0) {
-            throw new RuntimeException("Codex conversion failed: " + output);
+            throw new RuntimeException("Codex conversion failed: " + stderr);
         }
 
-        String javaCode = output.strip();
+        String javaCode = stdout.strip();
 
         if (javaCode.isEmpty()) {
             throw new RuntimeException("LLM returned empty Java code");
@@ -54,14 +55,15 @@ public class Convert {
     public static boolean compileJava(Path javaFile) throws IOException, InterruptedException {
         ProcessBuilder pb = new ProcessBuilder("javac", javaFile.getFileName().toString());
         pb.directory(javaFile.getParent().toFile());
-        pb.redirectErrorStream(true);
+        pb.redirectErrorStream(false);
         Process process = pb.start();
 
-        String errorOutput = new String(process.getInputStream().readAllBytes());
+        String stderr = new String(process.getErrorStream().readAllBytes());
+        process.getInputStream().readAllBytes();
         int exitCode = process.waitFor();
 
         if (exitCode != 0) {
-            System.err.println("Compilation failed:\n" + errorOutput);
+            System.err.println("Compilation failed:\n" + stderr);
             return false;
         }
 
